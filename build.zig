@@ -24,9 +24,19 @@ pub fn build(b: *std.Build) void {
 		.optimize = optimize,
 	});
 
-	exe.addModule("zgl", b.createModule(.{
-		.source_file = .{.path = "zgl/zgl.zig"},
+	exe.addModule("gl", b.createModule(.{
+		.source_file = .{.path = "libs/gl45.zig"},
 	}));
+
+	const glfw_dep = b.dependency("mach_glfw", .{
+		.target = exe.target,
+		.optimize = exe.optimize,
+	});
+	exe.addModule("mach-glfw", glfw_dep.module("mach-glfw"));
+	try @import("mach_glfw").link(glfw_dep.builder, exe);
+
+	// Link against libc
+	exe.linkLibC();
 
 	// This declares intent for the executable to be installed into the
 	// standard location when the user invokes the "install" step (the default
@@ -59,7 +69,7 @@ pub fn build(b: *std.Build) void {
 	// Creates a step for unit testing. This only builds the test executable
 	// but does not run it.
 	const unit_tests = b.addTest(.{
-		.root_source_file = .{ .path = "src/main.zig" },
+		.root_source_file = .{ .path = "src/tests.zig" },
 		.target = target,
 		.optimize = optimize,
 	});

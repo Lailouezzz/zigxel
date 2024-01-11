@@ -1,0 +1,10 @@
+.{
+	.name = "ZigXel",
+	.version = "0.0.1",
+	.dependencies = .{
+		.mach_glfw = .{
+			.url = "https://pkg.machengine.org/mach-glfw/58a16012c33b047b9468cccb53ecd95835456121.tar.gz",
+			.hash = "1220dcf8c006b5bd91bb55c732eac6d95afe16247058f31348e1e2e071dfca7923db",
+		},
+	},
+}

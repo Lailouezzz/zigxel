@@ -1,22 +1,16 @@
 const std = @import("std");
 
-const zgl = @import("zgl");
+const glfw = @import("glfw.zig");
+const gl = @import("gl");
+
+const Window = @import("engine/Window.zig");
 
 pub fn main() !void {
-	std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-	const stdout_file = std.io.getStdOut().writer();
-	var bw = std.io.bufferedWriter(stdout_file);
-	const stdout = bw.writer();
-
-	try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-	try bw.flush();
-}
-
-test "simple test" {
-	var list = std.ArrayList(i32).init(std.testing.allocator);
-	defer list.deinit();
-	try list.append(42);
-	try std.testing.expectEqual(@as(i32, 42), list.pop());
+	try glfw.initError();
+	defer glfw.deinit();
+	var w = try Window.init("test", 500, 500, null, null);
+	defer w.deinit();
+	var w2 = try Window.init("test2", 500, 500, null, null);
+	defer w2.deinit();
+	std.time.sleep(1000*1000*1000);
 }
