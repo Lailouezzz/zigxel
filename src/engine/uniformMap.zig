@@ -2,7 +2,7 @@ const std = @import("std");
 
 const glfw = @import("../glfw.zig");
 const gl = @import("gl");
-const zlm = @import("zlm");
+const zlm = @import("zlm").SpecializeOn(gl.GLfloat);
 
 const ShaderProgram = @import("ShaderProgram.zig");
 
@@ -16,12 +16,15 @@ pub fn UniformMap(comptime uniforms: []const [:0]const u8) type {
 
 		uniformMap: [uniforms.len]gl.GLint = undefined,
 
-		fn idxFromUniform(self: Self, uniform: [:0]const u8) usize {
-			_ = self;
+		fn idxFromUniform(comptime uniform: [:0]const u8) usize {
 			inline for (uniforms, 0..) |uni, k| {
 				if (std.mem.eql(u8, uniform, uni)) return k;
 			}
 			unreachable;
+		}
+
+		pub fn getUniform(self: Self, comptime uniform: [:0]const u8) gl.GLint {
+			return self.uniformMap[idxFromUniform(uniform)];
 		}
 
 		pub fn init(shaderProgram: ShaderProgram) !Self {

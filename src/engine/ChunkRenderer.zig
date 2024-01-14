@@ -32,8 +32,8 @@ pub fn init() !Self {
 }
 
 pub fn render(self: Self, scene: Scene) void {
-	_ = scene;
 	_ = self;
+	_ = scene;
 }
 
 pub fn deinit(self: *Self) void {

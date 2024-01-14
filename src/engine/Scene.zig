@@ -2,7 +2,7 @@ const std = @import("std");
 
 const glfw = @import("../glfw.zig");
 const gl = @import("gl");
-const zlm = @import("zlm");
+const zlm = @import("zlm").SpecializeOn(gl.GLfloat);
 
 const Self = @This();
 
