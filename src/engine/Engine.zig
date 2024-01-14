@@ -35,6 +35,7 @@ pub fn run(self: *Self) !void {
 
 		self.window.handleInput(now - lastTime);
 
+		self.scene.updateProj(self.window.width, self.window.height);
 		self.renderer.render(self.scene, self.window.*);
 
 		self.window.update();
