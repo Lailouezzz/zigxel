@@ -27,6 +27,9 @@ pub fn build(b: *std.Build) void {
 	exe.addModule("gl", b.createModule(.{
 		.source_file = .{.path = "libs/gl45.zig"},
 	}));
+	exe.addModule("zlm", b.createModule(.{
+		.source_file = .{.path = "zlm/src/zlm.zig"},
+	}));
 
 	const glfw_dep = b.dependency("mach_glfw", .{
 		.target = exe.target,

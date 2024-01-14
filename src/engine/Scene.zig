@@ -2,14 +2,17 @@ const std = @import("std");
 
 const glfw = @import("../glfw.zig");
 const gl = @import("gl");
+const zlm = @import("zlm");
 
 const Self = @This();
 
-camera: u32,
+camera: zlm.Vec3,
+allocator: std.mem.Allocator,
 
-pub fn init() !Self {
+pub fn init(allocator: std.mem.Allocator) !Self {
 	return Self {
-		.camera = 0xdeadbeef,
+		.camera = zlm.vec3(0, 0, 0),
+		.allocator = allocator,
 	};
 }
 

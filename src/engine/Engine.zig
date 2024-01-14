@@ -15,25 +15,30 @@ scene: Scene,
 allocator: std.mem.Allocator,
 
 pub fn init(title: [*:0]const u8, opts: Window.WindowOptions, allocator: std.mem.Allocator) !Self {
-	std.log.info("Engine: init.", .{});
+	defer std.log.info("Engine: initialized.", .{});
 
 	return Self {
 		.window = try Window.create(title, opts, allocator),
 		.renderer = try Renderer.init(),
-		.scene = try Scene.init(),
+		.scene = try Scene.init(allocator),
 		.allocator = allocator,
 	};
 }
 
 pub fn run(self: *Self) !void {
+	var lastTime = std.time.microTimestamp();
+
 	while (!self.window.handle.shouldClose()) {
+		const now = std.time.microTimestamp();
+
 		self.window.pollEvents();
 
-		self.window.handleInput();
+		self.window.handleInput(now - lastTime);
 
 		self.renderer.render(self.scene, self.window.*);
 
 		self.window.update();
+		lastTime = now;
 	}
 }
 

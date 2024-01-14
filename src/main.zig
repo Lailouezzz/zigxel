@@ -5,12 +5,12 @@ const glfw = @import("glfw.zig");
 const Engine = @import("engine/Engine.zig");
 const Window = @import("engine/Window.zig");
 
-fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap) void {
+fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap, diffTime: i64) void {
 	const engine: ?*Engine = @ptrCast(@alignCast(pointer));
 	_ = engine;
 
-	if (keyStateMap.isDown(glfw.Key.a)) {
-		std.log.info("fdsnjkfndsf", .{});
+	if (keyStateMap.isDown(glfw.Key.d)) {
+		std.log.info("diff: {}", .{diffTime});
 	}
 }
 

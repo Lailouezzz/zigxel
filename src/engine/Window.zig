@@ -9,7 +9,7 @@ handle: glfw.Window,
 width: u32,
 height: u32,
 pointer: ?*anyopaque,
-inputCb: ?*const fn(pointer: ?*anyopaque, keyStateMap: KeyStateMap)void,
+inputCb: ?*const fn(pointer: ?*anyopaque, keyStateMap: KeyStateMap, diffTime: i64)void,
 keyStateMap: KeyStateMap,
 allocator: std.mem.Allocator,
 
@@ -60,9 +60,9 @@ pub fn pollEvents(self: Self) void {
 	glfw.pollEvents();
 }
 
-pub fn handleInput(self: *Self) void {
+pub fn handleInput(self: *Self, diffTime: i64) void {
 	if (self.inputCb) |cb| {
-		cb(self.pointer, self.keyStateMap);
+		cb(self.pointer, self.keyStateMap, diffTime);
 	}
 	self.keyStateMap.resetAction();
 }
@@ -81,7 +81,7 @@ pub const WindowOptions = struct {
 	width: u32,
 	height: u32,
 	pointer: ?*anyopaque,
-	inputCb: ?*const fn(pointer: ?*anyopaque, keyStateMap: KeyStateMap)void,
+	inputCb: ?*const fn(pointer: ?*anyopaque, keyStateMap: KeyStateMap, diffTime: i64)void,
 };
 
 pub const KeyStateMap = struct {
