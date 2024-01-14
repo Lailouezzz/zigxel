@@ -3,14 +3,15 @@ const std = @import("std");
 const glfw = @import("glfw.zig");
 
 const Engine = @import("engine/Engine.zig");
+const Window = @import("engine/Window.zig");
 
-fn keycb(pointer: ?*anyopaque, key: glfw.Key, scancode: i32, action: glfw.Action, mods: glfw.Mods) void {
-	const engine = @as(?*Engine, @ptrCast(@alignCast(pointer.?))).?;
-	_ = key;
-	_ = scancode;
-	_ = action;
-	_ = mods;
-	std.log.info("Key press. {}", .{engine.window.width});
+fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap) void {
+	const engine: ?*Engine = @ptrCast(@alignCast(pointer));
+	_ = engine;
+
+	if (keyStateMap.isDown(glfw.Key.a)) {
+		std.log.info("fdsnjkfndsf", .{});
+	}
 }
 
 pub fn main() !void {
@@ -25,7 +26,7 @@ pub fn main() !void {
 		.height = 500,
 		.width = 500,
 		.pointer = &engine,
-		.keycb = keycb,
+		.inputCb = inputCb,
 	}, allocator);
 	defer engine.deinit();
 	try engine.run();

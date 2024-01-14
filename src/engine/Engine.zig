@@ -29,6 +29,8 @@ pub fn run(self: *Self) !void {
 	while (!self.window.handle.shouldClose()) {
 		self.window.pollEvents();
 
+		self.window.handleInput();
+
 		self.renderer.render(self.scene, self.window.*);
 
 		self.window.update();
