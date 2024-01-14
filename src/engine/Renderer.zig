@@ -11,15 +11,15 @@ const ChunkRenderer = @import("ChunkRenderer.zig");
 
 chunkRenderer: ChunkRenderer,
 
-pub fn init() Self {
+pub fn init() !Self {
 	return Self {
-		.chunkRenderer = ChunkRenderer.init(),
+		.chunkRenderer = try ChunkRenderer.init(),
 	};
 }
 
-pub fn render(self: Self, scene: Scene, window: Window) !void {
+pub fn render(self: Self, scene: Scene, window: Window) void {
 	gl.clear(gl.COLOR_BUFFER_BIT);
-	gl.viewport(0, 0, window.width, window.height);
+	gl.viewport(0, 0, @intCast(window.width), @intCast(window.height));
 
 	self.chunkRenderer.render(scene);
 }
