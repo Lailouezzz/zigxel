@@ -17,5 +17,5 @@ pub fn init(pos: zlm.Vec3, dir: zlm.Vec3) Self {
 }
 
 pub fn lookMatrix(self: Self) zlm.Mat4 {
-	return zlm.Mat4.createLook(self.pos, self.dir, zlm.vec3(0, 1, 0));
+	return zlm.Mat4.createLookAt(self.pos, self.dir, zlm.vec3(0, 1, 0));
 }

@@ -3,20 +3,24 @@ const std = @import("std");
 const glfw = @import("../glfw.zig");
 const gl = @import("gl");
 const zlm = @import("zlm").SpecializeOn(gl.GLfloat);
+const toRadians = @import("zlm").toRadians;
 
 const Self = @This();
 
 const Camera = @import("Camera.zig");
+const Chunk = @import("Chunk.zig");
 
 camera: Camera,
 fov: f32,
 projection: zlm.Mat4 = undefined,
+chunk: Chunk,
 allocator: std.mem.Allocator,
 
 pub fn init(allocator: std.mem.Allocator) !Self {
 	return Self {
-		.camera = Camera.init(zlm.vec3(1, 1, 1), zlm.vec3(-1, -1, -1).normalize()),
-		.fov = 60,
+		.camera = Camera.init(zlm.vec3(1, 1, 1), zlm.vec3(0, 0, 0).normalize()),
+		.fov = toRadians(70.0),
+		.chunk = try Chunk.init(),
 		.allocator = allocator,
 	};
 }
@@ -26,5 +30,5 @@ pub fn updateProj(self: *Self, width: u32, height: u32) void {
 }
 
 pub fn deinit(self: *Self) void {
-	_ = self;
+	self.chunk.deinit();
 }

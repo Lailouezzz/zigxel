@@ -12,13 +12,14 @@ const ChunkRenderer = @import("ChunkRenderer.zig");
 chunkRenderer: ChunkRenderer,
 
 pub fn init() !Self {
+	gl.enable(gl.DEPTH_TEST);
 	return Self {
 		.chunkRenderer = try ChunkRenderer.init(),
 	};
 }
 
 pub fn render(self: Self, scene: Scene, window: Window) void {
-	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 	gl.viewport(0, 0, @intCast(window.width), @intCast(window.height));
 
 	self.chunkRenderer.render(scene);
