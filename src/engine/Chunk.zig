@@ -6,71 +6,41 @@ const zlm = @import("zlm").SpecializeOn(gl.GLfloat);
 
 const Self = @This();
 
-vao: gl.GLuint,
-vbo: gl.GLuint,
+pub const CHUNK_SIZE = 8;
+//			X			Y			Z
+blocks: [CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE]u8 = undefined,
+pos: [2]u32,
+vao: gl.GLuint = undefined,
+vboVertices: gl.GLuint = undefined,
+vboNormals: gl.GLuint = undefined,
 
-pub fn init() !Self {
-	var vao: gl.GLuint = undefined;
-	gl.createVertexArrays(1, &vao);
-	errdefer gl.deleteVertexArrays(1, &vao);
-	gl.bindVertexArray(vao);
-	var vbo: gl.GLuint = undefined;
-	gl.createBuffers(1, &vbo);
-	errdefer gl.deleteBuffers(1, &vbo);
-	gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
-	var vertices = [_]gl.GLfloat{
-	-1.0,-1.0,-1.0, // triangle 1 : begin
-	-1.0,-1.0, 1.0,
-	-1.0, 1.0, 1.0, // triangle 1 : end
-	1.0, 1.0,-1.0, // triangle 2 : begin
-	-1.0,-1.0,-1.0,
-	-1.0, 1.0,-1.0, // triangle 2 : end
-	1.0,-1.0, 1.0,
-	-1.0,-1.0,-1.0,
-	1.0,-1.0,-1.0,
-	1.0, 1.0,-1.0,
-	1.0,-1.0,-1.0,
-	-1.0,-1.0,-1.0,
-	-1.0,-1.0,-1.0,
-	-1.0, 1.0, 1.0,
-	-1.0, 1.0,-1.0,
-	1.0,-1.0, 1.0,
-	-1.0,-1.0, 1.0,
-	-1.0,-1.0,-1.0,
-	-1.0, 1.0, 1.0,
-	-1.0,-1.0, 1.0,
-	1.0,-1.0, 1.0,
-	1.0, 1.0, 1.0,
-	1.0,-1.0,-1.0,
-	1.0, 1.0,-1.0,
-	1.0,-1.0,-1.0,
-	1.0, 1.0, 1.0,
-	1.0,-1.0, 1.0,
-	1.0, 1.0, 1.0,
-	1.0, 1.0,-1.0,
-	-1.0, 1.0,-1.0,
-	1.0, 1.0, 1.0,
-	-1.0, 1.0,-1.0,
-	-1.0, 1.0, 1.0,
-	1.0, 1.0, 1.0,
-	-1.0, 1.0, 1.0,
-	1.0,-1.0, 1.0
+pub fn init(x: u32, y: u32) !Self {
+	var self = Self {
+		.pos = .{x, y},
 	};
-	for (&vertices) |*vertice| {
-		vertice.* /= 4;
+	for (0..CHUNK_SIZE) |k| {
+		for (0..CHUNK_SIZE) |j| {
+			self.makeAt(@intCast(k), @intCast(j));
+		}
 	}
-	gl.bufferData(gl.ARRAY_BUFFER, vertices.len * @sizeOf(@TypeOf(vertices[0])), &vertices, gl.STATIC_DRAW);
-	gl.enableVertexAttribArray(0);
-	gl.vertexAttribPointer(0, 3, gl.FLOAT, gl.FALSE, 0, null);
-	gl.bindBuffer(gl.ARRAY_BUFFER, 0);
-	gl.bindVertexArray(0);
-	return Self {
-		.vao = vao,
-		.vbo = vbo,
-	};
+	self.mesh();
+	return self;
+}
+
+fn mesh(self: *Self) void {
+	_ = self;
+}
+
+fn makeAt(self: *Self, x: u32, y: u32) void {
+	@memset(self.blocks[x][y][0..x], 1);
+	@memset(self.blocks[x][y][x..CHUNK_SIZE], 0);
+}
+
+pub fn modelMatrix(self: Self) zlm.Mat4 {
+	_ = self;
+	return zlm.Mat4.identity;
 }
 
 pub fn deinit(self: *Self) void {
-	gl.deleteVertexArrays(1, &self.vao);
-	gl.deleteBuffers(1, &self.vbo);
+	_ = self;
 }

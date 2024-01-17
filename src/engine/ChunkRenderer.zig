@@ -33,13 +33,15 @@ pub fn init() !Self {
 }
 
 pub fn render(self: Self, scene: Scene) void {
-	const viewproj = scene.camera.lookMatrix().mul(scene.projection);
-	self.shaderProgram.bind();
-	gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));
-	gl.bindVertexArray(scene.chunk.vao);
-	gl.drawArrays(gl.TRIANGLES, 0, 12*3);
-	gl.bindVertexArray(0);
-	self.shaderProgram.unbind();
+	_ = self;
+	_ = scene;
+	// const viewproj = scene.camera.lookMatrix().mul(scene.projection);
+	// self.shaderProgram.bind();
+	// gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));
+	// gl.bindVertexArray(scene.chunk.vao);
+	// gl.drawArrays(gl.TRIANGLES, 0, 12*3);
+	// gl.bindVertexArray(0);
+	// self.shaderProgram.unbind();
 }
 
 pub fn deinit(self: *Self) void {

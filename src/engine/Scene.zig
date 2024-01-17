@@ -8,19 +8,19 @@ const toRadians = @import("zlm").toRadians;
 const Self = @This();
 
 const Camera = @import("Camera.zig");
-const Chunk = @import("Chunk.zig");
+const Terrain = @import("Terrain.zig");
 
 camera: Camera,
 fov: f32,
 projection: zlm.Mat4 = undefined,
-chunk: Chunk,
+terrain: Terrain,
 allocator: std.mem.Allocator,
 
 pub fn init(allocator: std.mem.Allocator) !Self {
 	return Self {
 		.camera = Camera.init(zlm.vec3(1, 1, 1), zlm.vec3(0, 0, 0).normalize()),
 		.fov = toRadians(70.0),
-		.chunk = try Chunk.init(),
+		.terrain = try Terrain.init(),
 		.allocator = allocator,
 	};
 }
@@ -30,5 +30,5 @@ pub fn updateProj(self: *Self, width: u32, height: u32) void {
 }
 
 pub fn deinit(self: *Self) void {
-	self.chunk.deinit();
+	self.terrain.deinit();
 }
