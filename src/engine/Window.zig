@@ -34,6 +34,7 @@ pub fn create(title: [*:0]const u8, opts: WindowOptions, allocator: std.mem.Allo
 	}) orelse return glfw.mustGetErrorCode();
 	errdefer self.handle.destroy();
 	self.handle.setUserPointer(self);
+	self.handle.setInputModeCursor(.disabled);
 	self.handle.setFramebufferSizeCallback(struct {
 		fn resizecb(window: glfw.Window, width: u32, height: u32) void {
 			const s = window.getUserPointer(Self).?;
@@ -60,14 +61,14 @@ pub fn pollEvents(self: Self) void {
 	glfw.pollEvents();
 }
 
-pub fn handleInput(self: *Self, diffTime: i64) void {
+pub fn update(self: *Self, diffTime: i64) void {
 	if (self.inputCb) |cb| {
 		cb(self.pointer, self.keyStateMap, diffTime);
 	}
 	self.keyStateMap.resetAction();
 }
 
-pub fn update(self: Self) void {
+pub fn swapBuffers(self: Self) void {
 	self.handle.swapBuffers();
 }
 

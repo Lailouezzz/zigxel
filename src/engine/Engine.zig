@@ -32,13 +32,12 @@ pub fn run(self: *Self) !void {
 		const now = std.time.microTimestamp();
 
 		self.window.pollEvents();
-
-		self.window.handleInput(now - lastTime);
+		self.window.update(now - lastTime);
 
 		self.scene.updateProj(self.window.width, self.window.height);
 		self.renderer.render(self.scene, self.window.*);
+		self.window.swapBuffers();
 
-		self.window.update();
 		lastTime = now;
 	}
 }
@@ -46,4 +45,5 @@ pub fn run(self: *Self) !void {
 pub fn deinit(self: *Self) void {
 	self.window.destroy();
 	self.renderer.deinit();
+	self.scene.deinit();
 }
