@@ -39,8 +39,8 @@ pub fn render(self: Self, scene: Scene) void {
 	const viewproj = scene.camera.lookMatrix().mul(scene.projection);
 	self.shaderProgram.bind();
 	gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));
-	for (0..8) |x| {
-		for (0..8) |y| {
+	for (0..32) |x| {
+		for (0..32) |y| {
 			const currentChunk = scene.terrain.chunk[x][y];
 			const model = currentChunk.modelMatrix();
 			gl.uniformMatrix4fv(self.uniformMap.getUniform("model"), 1, gl.FALSE, @ptrCast(&model.fields));

@@ -8,12 +8,12 @@ const Self = @This();
 
 const Chunk = @import("Chunk.zig");
 
-chunk: [8][8]Chunk = undefined,
+chunk: [32][32]Chunk = undefined,
 
 pub fn init() !Self {
 	var self = Self {};
-	for (0..8) |x| {
-		for (0..8) |y| {
+	for (0..32) |x| {
+		for (0..32) |y| {
 			self.chunk[x][y] = try Chunk.init(@intCast(x), @intCast(y));
 		}
 	}
@@ -21,8 +21,8 @@ pub fn init() !Self {
 }
 
 pub fn deinit(self: *Self) void {
-	for (0..8) |x| {
-		for (0..8) |y| {
+	for (0..32) |x| {
+		for (0..32) |y| {
 			self.chunk[x][y].deinit();
 		}
 	}

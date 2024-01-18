@@ -61,11 +61,12 @@ fn mesh(self: *Self) !void {
 					const v3 = makeMeshData(x + 1, y, z + 1, 2, current, 1, 0, 0);
 					try vertices.appendSlice(&makeMeshFace(
 						v0,
+						v2,
 						v1,
-						v2,
 						v0,
+						v3,
 						v2,
-						v3));
+						));
 				}
 				if (self.isVoid(@as(i8, @bitCast(x)) - 1, y, z)) {
 					const v0 = makeMeshData(x, y, z, 3, current, -1, 0, 0);
@@ -74,11 +75,12 @@ fn mesh(self: *Self) !void {
 					const v3 = makeMeshData(x, y, z + 1, 3, current, -1, 0, 0);
 					try vertices.appendSlice(&makeMeshFace(
 						v0,
-						v2,
 						v1,
+						v2,
 						v0,
+						v2,
 						v3,
-						v2));
+						));
 				}
 				if (self.isVoid(x, y + 1, z)) {
 					const v0 = makeMeshData(x, y + 1, z, 0, current, 0, 1, 0);
@@ -87,11 +89,12 @@ fn mesh(self: *Self) !void {
 					const v3 = makeMeshData(x, y + 1, z + 1, 0, current, 0, 1, 0);
 					try vertices.appendSlice(&makeMeshFace(
 						v0,
+						v2,
 						v3,
-						v2,
 						v0,
+						v1,
 						v2,
-						v1));
+						));
 				}
 				if (self.isVoid(x, @as(i8, @bitCast(y)) - 1, z)) {
 					const v0 = makeMeshData(x, y, z, 1, current, 0, -1, 0);
@@ -100,11 +103,12 @@ fn mesh(self: *Self) !void {
 					const v3 = makeMeshData(x, y, z + 1, 1, current, 0, -1, 0);
 					try vertices.appendSlice(&makeMeshFace(
 						v0,
-						v2,
 						v3,
+						v2,
 						v0,
+						v2,
 						v1,
-						v2));
+						));
 				}
 				if (self.isVoid(x, y, z + 1)) {
 					const v0 = makeMeshData(x, y, z + 1, 4, current, 0, 0, 1);
@@ -113,11 +117,12 @@ fn mesh(self: *Self) !void {
 					const v3 = makeMeshData(x + 1, y, z + 1, 4, current, 0, 0, 1);
 					try vertices.appendSlice(&makeMeshFace(
 						v0,
+						v2,
 						v3,
-						v2,
 						v0,
+						v1,
 						v2,
-						v1));
+						));
 				}
 				if (self.isVoid(x, y, @as(i8, @bitCast(z)) - 1)) {
 					const v0 = makeMeshData(x, y, z, 5, current, 0, 0, -1);
@@ -130,7 +135,8 @@ fn mesh(self: *Self) !void {
 						v2,
 						v0,
 						v2,
-						v1));
+						v1,
+						));
 				}
 			}
 		}
@@ -169,8 +175,14 @@ pub fn at(self: *Self, x: anytype, y: anytype, z: anytype) *u8 {
 }
 
 fn makeAt(self: *Self, x: u32, z: u32) void {
-	for (0..(x + z) / 2) |y| {
-		self.at(x, y, z).* = 1;
+	// for (0..(x + z) / 2) |y| {
+	// 	self.at(x, y, z).* = 1;
+	// }
+	var cx : f32 = @cos(@as(f32, @floatFromInt(self.pos[0])) + @as(f32, @floatFromInt(x)) / 8.0);
+	var cz : f32 = @cos(@as(f32, @floatFromInt(self.pos[1])) + @as(f32, @floatFromInt(z)) / 8.0);
+	var height : u8 = @intFromFloat(CHUNK_SIZE * (cx + cz + 2) / 4.0 + 1);
+	for (0..height) |y| {
+		self.at(x, y, z).* = @truncate(y + 1);
 	}
 }
 

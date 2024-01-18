@@ -18,12 +18,15 @@ fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap, diffTime: i64)
 	engine.scene.camera.moveYaw(-config.camera.MOUSE_SENSIVITY * @as(f32, @floatCast(cursorPos.xpos)));
 	engine.scene.camera.update();
 
-	if (keyStateMap.isDown(glfw.Key.w)) engine.scene.camera.moveForward(config.camera.CAMERA_VELOCITY);
-	if (keyStateMap.isDown(glfw.Key.s)) engine.scene.camera.moveBackward(config.camera.CAMERA_VELOCITY);
-	if (keyStateMap.isDown(glfw.Key.a)) engine.scene.camera.moveLeft(config.camera.CAMERA_VELOCITY);
-	if (keyStateMap.isDown(glfw.Key.d)) engine.scene.camera.moveRight(config.camera.CAMERA_VELOCITY);
-	if (keyStateMap.isDown(glfw.Key.space)) engine.scene.camera.moveUp(config.camera.CAMERA_VELOCITY);
-	if (keyStateMap.isDown(glfw.Key.left_control)) engine.scene.camera.moveDown(config.camera.CAMERA_VELOCITY);
+	const velocity: f32 = if (keyStateMap.isDown(glfw.Key.left_shift)) config.camera.CAMERA_VELOCITY * 2 else config.camera.CAMERA_VELOCITY;
+
+	if (keyStateMap.isDown(glfw.Key.w)) engine.scene.camera.moveForward(velocity);
+	if (keyStateMap.isDown(glfw.Key.s)) engine.scene.camera.moveBackward(velocity);
+	if (keyStateMap.isDown(glfw.Key.a)) engine.scene.camera.moveLeft(velocity);
+	if (keyStateMap.isDown(glfw.Key.d)) engine.scene.camera.moveRight(velocity);
+	if (keyStateMap.isDown(glfw.Key.space)) engine.scene.camera.moveUp(velocity);
+	if (keyStateMap.isDown(glfw.Key.left_control)) engine.scene.camera.moveDown(velocity);
+
 	if (keyStateMap.isPressed(glfw.Key.F4)) gl.polygonMode(gl.FRONT_AND_BACK, gl.LINE);
 	if (keyStateMap.isPressed(glfw.Key.F5)) gl.polygonMode(gl.FRONT_AND_BACK, gl.FILL);
 

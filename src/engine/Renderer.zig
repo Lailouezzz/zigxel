@@ -13,6 +13,9 @@ chunkRenderer: ChunkRenderer,
 
 pub fn init() !Self {
 	gl.enable(gl.DEPTH_TEST);
+	gl.enable(gl.CULL_FACE);
+	gl.enable(gl.BLEND);
+	gl.cullFace(gl.BACK);
 	return Self {
 		.chunkRenderer = try ChunkRenderer.init(),
 	};
