@@ -19,7 +19,11 @@ allocator: std.mem.Allocator,
 pub fn init(allocator: std.mem.Allocator) !Self {
 	return Self {
 		.camera = Camera.init(zlm.vec3(0, 0, 0), 0, 0),
-		.terrain = try Terrain.init(),
+		.terrain = blk: {
+			var terrain = Terrain.init(allocator);
+			try terrain.gen(@truncate(std.time.milliTimestamp()));
+			break :blk terrain;
+		},
 		.allocator = allocator,
 	};
 }

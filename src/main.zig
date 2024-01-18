@@ -6,6 +6,7 @@ const config = @import("engine/config.zig");
 
 const Engine = @import("engine/Engine.zig");
 const Window = @import("engine/Window.zig");
+const Terrain = @import("engine/Terrain.zig");
 
 fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap, diffTime: i64) void {
 	const engine: *Engine = @as(?*Engine, @ptrCast(@alignCast(pointer))).?;

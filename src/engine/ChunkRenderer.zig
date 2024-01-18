@@ -38,13 +38,14 @@ pub fn render(self: Self, scene: Scene) void {
 	const viewproj = scene.camera.lookMatrix().mul(scene.projection);
 	self.shaderProgram.bind();
 	gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));
-	for (0..32) |x| {
-		for (0..32) |y| {
-			const currentChunk = scene.terrain.chunk[x][y];
-			const model = currentChunk.modelMatrix();
+	var it = scene.terrain.chunks.valueIterator();
+	while (it.next()) |chunkColumn| {
+		for (chunkColumn.*.*) |chunk| {
+			if (chunk.verticesCount == 0) continue ;
+			const model = chunk.modelMatrix();
 			gl.uniformMatrix4fv(self.uniformMap.getUniform("model"), 1, gl.FALSE, @ptrCast(&model.fields));
-			gl.bindVertexArray(currentChunk.vao);
-			gl.drawArrays(gl.TRIANGLES, 0, @intCast(currentChunk.verticesCount));
+			gl.bindVertexArray(chunk.vao);
+			gl.drawArrays(gl.TRIANGLES, 0, @intCast(chunk.verticesCount));
 		}
 	}
 	gl.bindVertexArray(0);
