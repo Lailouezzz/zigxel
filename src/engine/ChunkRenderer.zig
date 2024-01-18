@@ -19,11 +19,11 @@ uniformMap: UniformMap,
 pub fn init() !Self {
 	const shaderProgram = try ShaderProgram.init(&[_]ShaderProgram.ShaderData{
 	.{
-		.source = @embedFile("shader/vertex.shad"),
+		.source = @embedFile("shader/chunk.vert"),
 		.shaderType = gl.VERTEX_SHADER,
 	},
 	.{
-		.source = @embedFile("shader/frag.shad"),
+		.source = @embedFile("shader/chunk.frag"),
 		.shaderType = gl.FRAGMENT_SHADER,
 	},});
 
@@ -34,8 +34,7 @@ pub fn init() !Self {
 }
 
 pub fn render(self: Self, scene: Scene) void {
-	// _ = self;
-	// _ = scene;
+	gl.enable(gl.DEPTH_TEST);
 	const viewproj = scene.camera.lookMatrix().mul(scene.projection);
 	self.shaderProgram.bind();
 	gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));

@@ -173,15 +173,18 @@ pub fn isVoid(self: *Self, x: anytype, y: anytype, z: anytype) bool {
 pub fn at(self: *Self, x: anytype, y: anytype, z: anytype) *u8 {
 	return &self.blocks[@as(usize, x) + (@as(usize, y) * CHUNK_SIZE) + (@as(usize, z) * CHUNK_SIZE * CHUNK_SIZE)];
 }
-
+const znoise = @import("znoise");
 fn makeAt(self: *Self, x: u32, z: u32) void {
-	// for (0..(x + z) / 2) |y| {
-	// 	self.at(x, y, z).* = 1;
+	// var cx : f32 = @cos(@as(f32, @floatFromInt(self.pos[0])) + @as(f32, @floatFromInt(x)) / 8.0);
+	// var cz : f32 = @cos(@as(f32, @floatFromInt(self.pos[1])) + @as(f32, @floatFromInt(z)) / 8.0);
+	// var height : u8 = @intFromFloat(CHUNK_SIZE * (cx + cz + 2) / 4.0 + 1);
+	// for (0..height) |y| {
+	// 	self.at(x, y, z).* = @truncate(y + 1);
 	// }
-	var cx : f32 = @cos(@as(f32, @floatFromInt(self.pos[0])) + @as(f32, @floatFromInt(x)) / 8.0);
-	var cz : f32 = @cos(@as(f32, @floatFromInt(self.pos[1])) + @as(f32, @floatFromInt(z)) / 8.0);
-	var height : u8 = @intFromFloat(CHUNK_SIZE * (cx + cz + 2) / 4.0 + 1);
-	for (0..height) |y| {
+	const n = znoise.FnlGenerator{ .fractal_type = .fbm };
+	const noise = (n.noise2(@floatFromInt(x + self.pos[0] * CHUNK_SIZE), @floatFromInt(z + self.pos[1] * CHUNK_SIZE)) + 1) / 2;
+	const height = noise * (CHUNK_SIZE - 1) + 1;
+	for (0..@as(u8, @intFromFloat(height))) |y| {
 		self.at(x, y, z).* = @truncate(y + 1);
 	}
 }
