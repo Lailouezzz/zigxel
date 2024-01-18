@@ -22,6 +22,15 @@ pub fn init(shadersData: []const ShaderData) !Self {
 		try self.addShader(shader.source, shader.shaderType);
 	}
 	gl.linkProgram(self.programId);
+	var s: gl.GLint = undefined;
+	gl.getProgramiv(self.programId, gl.LINK_STATUS, &s);
+	if (s != gl.TRUE) {
+		const bufLen: comptime_int = 2048;
+		var msg = [_]u8{0} ** bufLen;
+		gl.getProgramInfoLog(programId, bufLen, null, &msg);
+		std.log.err("Program link error : {s}.", .{msg});
+		return Error.ProgramError;
+	}
 	return self;
 }
 
@@ -48,7 +57,7 @@ fn addShader(self: Self, source: [*:0]const u8, shaderType: gl.GLenum) !void {
 	var s: gl.GLint = undefined;
 	gl.getShaderiv(shaderId, gl.COMPILE_STATUS, &s);
 	if (s != gl.TRUE) {
-		const bufLen: comptime_int = 1024;
+		const bufLen: comptime_int = 2048;
 		var msg = [_]u8{0} ** bufLen;
 		gl.getShaderInfoLog(shaderId, bufLen, null, &msg);
 		std.log.err("Shader compile error : {s}.", .{msg});
