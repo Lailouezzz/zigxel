@@ -1,6 +1,7 @@
 const std = @import("std");
 
 const glfw = @import("glfw.zig");
+const gl = @import("gl");
 const config = @import("engine/config.zig");
 
 const Engine = @import("engine/Engine.zig");
@@ -21,6 +22,10 @@ fn inputCb(pointer: ?*anyopaque, keyStateMap: Window.KeyStateMap, diffTime: i64)
 	if (keyStateMap.isDown(glfw.Key.s)) engine.scene.camera.moveBackward(config.camera.CAMERA_VELOCITY);
 	if (keyStateMap.isDown(glfw.Key.a)) engine.scene.camera.moveLeft(config.camera.CAMERA_VELOCITY);
 	if (keyStateMap.isDown(glfw.Key.d)) engine.scene.camera.moveRight(config.camera.CAMERA_VELOCITY);
+	if (keyStateMap.isDown(glfw.Key.space)) engine.scene.camera.moveUp(config.camera.CAMERA_VELOCITY);
+	if (keyStateMap.isDown(glfw.Key.left_control)) engine.scene.camera.moveDown(config.camera.CAMERA_VELOCITY);
+	if (keyStateMap.isPressed(glfw.Key.F4)) gl.polygonMode(gl.FRONT_AND_BACK, gl.LINE);
+	if (keyStateMap.isPressed(glfw.Key.F5)) gl.polygonMode(gl.FRONT_AND_BACK, gl.FILL);
 
 	engine.window.handle.setCursorPos(0, 0);
 }

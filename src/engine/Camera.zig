@@ -59,6 +59,14 @@ pub fn moveRight(self: *Self, delta: gl.GLfloat) void {
 	self.moveLeft(-delta);
 }
 
+pub fn moveUp(self: *Self, delta: gl.GLfloat) void {
+	self.pos = self.pos.add(up.scale(delta));
+}
+
+pub fn moveDown(self: *Self, delta: gl.GLfloat) void {
+	self.moveUp(-delta);
+}
+
 pub fn update(self: *Self) void {
 	self.dir.x = cos(self.yaw) * cos(self.pitch);
 	self.dir.y = sin(self.pitch);

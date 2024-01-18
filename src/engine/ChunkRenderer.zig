@@ -10,6 +10,7 @@ const Scene = @import("Scene.zig");
 const ShaderProgram = @import("ShaderProgram.zig");
 const UniformMap = @import("uniformMap.zig").UniformMap(&[_][:0]const u8{
 	"viewproj",
+	"model",
 });
 
 shaderProgram: ShaderProgram,
@@ -38,11 +39,15 @@ pub fn render(self: Self, scene: Scene) void {
 	const viewproj = scene.camera.lookMatrix().mul(scene.projection);
 	self.shaderProgram.bind();
 	gl.uniformMatrix4fv(self.uniformMap.getUniform("viewproj"), 1, gl.FALSE, @ptrCast(&viewproj.fields));
-	// gl.bindVertexArray(scene.terrain.chunk[0][0].vao);
-	// gl.drawArrays(gl.TRIANGLES, 0, @intCast(scene.terrain.chunk[0][0].verticesCount));
-	// gl.bindVertexArray(0);
-	gl.bindVertexArray(scene.vao);
-	gl.drawArrays(gl.TRIANGLES, 0, 12*3);
+	for (0..8) |x| {
+		for (0..8) |y| {
+			const currentChunk = scene.terrain.chunk[x][y];
+			const model = currentChunk.modelMatrix();
+			gl.uniformMatrix4fv(self.uniformMap.getUniform("model"), 1, gl.FALSE, @ptrCast(&model.fields));
+			gl.bindVertexArray(currentChunk.vao);
+			gl.drawArrays(gl.TRIANGLES, 0, @intCast(currentChunk.verticesCount));
+		}
+	}
 	gl.bindVertexArray(0);
 	self.shaderProgram.unbind();
 }
