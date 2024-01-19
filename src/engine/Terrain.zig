@@ -16,18 +16,20 @@ pub const ChunkColumn = [CHUNK_COLUMN_HEIGHT]Chunk;
 pub const ChunkMap = std.AutoHashMap([2]i32, *ChunkColumn);
 
 chunks: ChunkMap,
+noiser: znoise.FnlGenerator,
 allocator: std.mem.Allocator,
 
-pub fn init(allocator: std.mem.Allocator) Self {
+pub fn init(seed: i32, allocator: std.mem.Allocator) Self {
 	return Self {
 		.allocator = allocator,
+		.noiser = znoise.FnlGenerator {.fractal_type = .fbm, .seed = seed},
 		.chunks = ChunkMap.init(allocator),
 	};
 }
 
 fn setBlockFromHeight(chunkColumn: *ChunkColumn, height: u32, x: u32, z: u32) void {
 	for (0..height) |y| {
-		chunkColumn.*[@divTrunc(y, Chunk.CHUNK_SIZE)].at(x, @mod(y, Chunk.CHUNK_SIZE), z).* = @intCast(y);
+		chunkColumn.*[@divTrunc(y, Chunk.CHUNK_SIZE)].at(x, @mod(y, Chunk.CHUNK_SIZE), z).* = @intCast(y + 1);
 	}
 }
 
@@ -41,7 +43,7 @@ pub fn genColumn(self: *Self, noiser: *znoise.FnlGenerator, x: i32, z: i32) !voi
 	const chunkColumn = try self.allocator.create(ChunkColumn);
 	errdefer self.allocator.destroy(chunkColumn);
 	for (chunkColumn, 0..) |*chunk, y| {
-		chunk.* = try Chunk.init(x, @truncate(@as(isize, @bitCast(y))), z, self);
+		chunk.* = try Chunk.init(x, @truncate(@as(isize, @bitCast(y))), z);
 	}
 	for (0..Chunk.CHUNK_SIZE) |inchunkx| {
 		for (0..Chunk.CHUNK_SIZE) |inchunkz| {
@@ -53,22 +55,26 @@ pub fn genColumn(self: *Self, noiser: *znoise.FnlGenerator, x: i32, z: i32) !voi
 	try self.chunks.put(.{x, z}, chunkColumn);
 }
 
-pub fn gen(self: *Self, seed: i32) !void {
-	var noiser = znoise.FnlGenerator {.fractal_type = .fbm, .seed = seed};
-
-	const width = 2;
-	const height = 2;
+pub fn gen(self: *Self) !void {
+	const width = 10;
+	const height = 10;
 	var x: i32 = -width;
 	while (x < width) : (x += 1) {
 		var z: i32 = -height;
 		while (z < height) : (z += 1) {
-			try self.genColumn(&noiser, x, z);
+			try self.genColumn(&self.noiser, x, z);
 		}
 	}
 	var it = self.chunks.valueIterator();
 	while (it.next()) |chunkColumn| {
 		for (chunkColumn.*) |*chunk| {
-			try chunk.mesh();
+			const chunkPos = chunk.*.pos;
+			try chunk.mesh(self.getChunk(chunkPos[0], chunkPos[1] + 1, chunkPos[2]),
+							self.getChunk(chunkPos[0], chunkPos[1] - 1, chunkPos[2]),
+							self.getChunk(chunkPos[0], chunkPos[1], chunkPos[2] + 1),
+							self.getChunk(chunkPos[0], chunkPos[1], chunkPos[2] - 1),
+							self.getChunk(chunkPos[0] - 1, chunkPos[1], chunkPos[2]),
+							self.getChunk(chunkPos[0] + 1, chunkPos[1], chunkPos[2]));
 		}
 	}
 }
@@ -79,11 +85,21 @@ pub fn getChunkColumnFromAbs(self: Self, x: i32, z: i32) ?*ChunkColumn {
 	return self.chunks.get(.{chunkX, chunkZ});
 }
 
+pub fn getChunkColumn(self: Self, x: i32, z: i32) ?*ChunkColumn {
+	return self.chunks.get(.{x, z});
+}
+
 pub fn getChunkFromAbs(self: Self, x: i32, y: i32, z: i32) ?*Chunk {
 	const chunkColumn = self.getChunkColumnFromAbs(x, z) orelse return null;
 	const chunkY = @divTrunc(if (y < 0) y - Chunk.CHUNK_SIZE + 1 else y, Chunk.CHUNK_SIZE);
 	if (chunkY < 0 or chunkY >= CHUNK_COLUMN_HEIGHT) return null;
 	return &chunkColumn[@as(u32, @bitCast(chunkY))];
+}
+
+pub fn getChunk(self: Self, x: i32, y: i32, z: i32) ?*Chunk {
+	const chunkColumn = self.getChunkColumn(x, z) orelse return null;
+	if (y < 0 or y >= CHUNK_COLUMN_HEIGHT) return null;
+	return &chunkColumn[@as(u32, @bitCast(y))];
 }
 
 pub fn at(self: Self, x: i32, y: i32, z: i32) ?*Chunk.Block {
